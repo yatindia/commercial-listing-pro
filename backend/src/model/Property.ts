@@ -4,6 +4,7 @@ import sid from "short-unique-id"
 const uid = new sid({length: 8})
 const PropertySchema = new Schema({
   owner: {type: String, required: true},
+  isPro: {type: Boolean, required: false, default: false },
   uid: {type: String, default: `cls-${uid()}`},
   video: {type: String, required: false},
   title: {type: String, required: true},
@@ -52,7 +53,7 @@ const PropertySchema = new Schema({
     type: String,
     default: 'active'
   },
-  createdAt: { type: Date, expires: 1200, default: Date.now }
+  createdAt: { type: Date, expires: 2592000, default: Date.now }
   
   });
 

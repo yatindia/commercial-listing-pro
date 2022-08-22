@@ -8,6 +8,7 @@ import {ProProperty} from "./model/ProProperty"
 import  jwt  from "jsonwebtoken";
 import bodyParser from 'body-parser'
 import Stripe from 'stripe';
+import Property from "./model/Property";
 const stripe = new Stripe(
   "sk_test_51JuLLQIhf6Tv4HB9mFwvZEmOG0MnL3zcHZAHuzQHdP3enQcLKkaBuZig3UnZLX2bI3iLKKjOb0g2NoHQxNbecTkO00kFtr8Xfd" , {apiVersion: '2022-08-01'});
 
@@ -62,8 +63,7 @@ app.post('/webhook', express.raw({type: "*/*"}), async(req, res) => {
       console.log(userId);
       
       if (userId !== false) {
-        // let emp = await EmployerProfile.findOne({link_id: userId })
-        // await EmployerProfile.updateOne({link_id: userId}, {resumePoints: emp.resumePoints+50})
+         await Property.findByIdAndUpdate(userId, {$set: {isPro: true}})
       }
   } catch (error) {
       console.log("error");
@@ -72,32 +72,7 @@ app.post('/webhook', express.raw({type: "*/*"}), async(req, res) => {
   }
   res.sendStatus(200)
   
-  // const sig : any= request.headers['stripe-signature'];
 
-  // let event;
-
-  // try {
-  //   event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-  //   console.log(event);
-    
-  // } catch (err:any) {
-  //   response.status(400).send(`Webhook Error: ${err.message}`);
-  //   return;
-  // }
-
-  // // Handle the event
-  // switch (event.type) {
-  //   case 'checkout.session.completed':
-  //     const session = event.data.object;
-  //     // Then define and call a function to handle the event checkout.session.completed
-  //     break;
-  //   // ... handle other event types
-  //   default:
-  //     console.log(`Unhandled event type ${event.type}`);
-  // }
-
-  // // Return a 200 response to acknowledge receipt of the event
-  // response.sendStatus(200);
 });
 
 

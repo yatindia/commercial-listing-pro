@@ -147,7 +147,7 @@ property.post("/search", async (req:Request, res:Response) => {
 
 
     
-        let partData = await Property.find( {$or: searchQuery}).sort({_id:-1}).limit(limit).skip(skip)
+        let partData = await Property.find( {$or: searchQuery}).sort({isPro: -1,_id:-1}).limit(limit).skip(skip)
         let count = await Property.find({$or: searchQuery}).sort({_id:-1}).countDocuments()
     
         response = {

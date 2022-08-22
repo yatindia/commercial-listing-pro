@@ -3,8 +3,6 @@
     import {protectedRoute} from "../../../components/functions"
     import {onMount} from "svelte"
 
-    //@ts-ignore
-    import CountdownTimer from 'timer-countdown';
 
     onMount(()=>protectedRoute())
     onMount(async ()=>getData())

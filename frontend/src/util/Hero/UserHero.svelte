@@ -91,22 +91,22 @@
 
           <div class="col-sm data">
 
-             <h2 class="title-d">Hi, {user.name}</h2>
+             <h2 class="title-d">Hi, {user.name? user.name: "..."}</h2>
             <div class="list-group">
                 {#if user != {}}
                 <li class="d-flex justify-content-between"> 
                     <strong>User ID:</strong>
-                    <span>{user._id}</span>
+                    <span>{user._id?user._id:"..."}</span>
                 </li>
 
                 <li class="d-flex justify-content-between"> 
                     <strong>Email:</strong> 
-                    <span>{user.email}</span>
+                    <span>{user.email?user.email:"..."}</span>
                 </li>
 
                 <li class="d-flex justify-content-between">
                     <strong>Phone:</strong>
-                    <span>{user.phoneNumber}</span>
+                    <span>{user.phoneNumber?user.phoneNumber:"..."}</span>
                 </li>
                 {/if}
             </div>
