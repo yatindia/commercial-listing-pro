@@ -1,0 +1,28 @@
+POST http://127.0.0.1:5000/auth/register
+Content-Type: application/json
+
+{
+        "name": "Name Name",
+        "email":"email@email.com",
+        "phoneNumber": "0000000000",
+        "password": "Mig3423assword@password"
+}
+
+###
+POST http://127.0.0.1:5000/auth/login
+Content-Type: application/json
+
+{
+
+         "email": "dmdd@gmail.com",
+       "password": "1212"
+}
+###
+POST http://127.0.0.1:5000/auth/login
+Content-Type: application/json
+
+{
+
+         "email": "dmdd@gmail.com",
+       "password": "1212"
+}

@@ -1,0 +1,3 @@
+POST http://127.0.0.1:5000/user
+Authorization: <Bearer> eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyYzk4OGI2ZGYyMWFkN2U2NjU4YTk4NyIsImlhdCI6MTY1NzgzMjM1OX0.E2oKElu9xzTC0svp0e7Dh5Q76bwcGoIEyx4wj_tOEKI
+

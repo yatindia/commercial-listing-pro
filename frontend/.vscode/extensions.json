@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "esbenp.prettier-vscode",
+        "shinhwagk.mkstring",
+        "rvest.vs-code-prettier-eslint",
+        "SimonSiefke.prettier-vscode"
+    ]
+}
