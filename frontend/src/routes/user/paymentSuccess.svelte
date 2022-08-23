@@ -4,7 +4,7 @@
             Payment Successful
         </h2>
         <h6>
-            You successfully activated Prenium Account it will be deactivated after 30 days. 
+            Your post has been successfully activated as Premium (30 days). 
         </h6>
         <a href="/">
         <button>Back to home</button>
