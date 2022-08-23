@@ -1,0 +1,1 @@
+The Server.Init Error can be solved by usin 1.0.0-next.71 of node adapter

@@ -338,7 +338,7 @@
                     <a
                     class="btn btn-danger"
                     target="_blank"
-                    href={`/print/${property._id}`}>
+                    href={`/print/${property.uid}`}>
                     Download
                     </a>
                 </span>
