@@ -6,9 +6,9 @@ dotenv.config();
 import cors from "cors"
 import {ProProperty} from "./model/ProProperty"
 import  jwt  from "jsonwebtoken";
-import bodyParser from 'body-parser'
 import Stripe from 'stripe';
 import Property from "./model/Property";
+import config from "../config"
 const stripe = new Stripe(
   "sk_test_51JuLLQIhf6Tv4HB9mFwvZEmOG0MnL3zcHZAHuzQHdP3enQcLKkaBuZig3UnZLX2bI3iLKKjOb0g2NoHQxNbecTkO00kFtr8Xfd" , {apiVersion: '2022-08-01'});
 
@@ -77,51 +77,12 @@ app.post('/webhook', express.raw({type: "*/*"}), async(req, res) => {
 
 
 
-
-
-// app.post("/stripe_webhooks", bodyParser.raw({type: 'application/json'}), async (req, res) => {
-
-// console.log('hhh');
-
-    
-//     const sig:any = req.headers['stripe-signature']
-//     const payload = req.body
-//     let secret = process.env.STRIPE_WEB_HOOK!
-//     let event;
-//     try {
-//       event = stripe.webhooks. add meta dataconstructEvent(payload, sig, secret)
-     
-
-//          let data = JSON.parse((req.body).toString('utf8')).data.object.metadata || false
-
-         
-//          console.log("Data from webhook: "+data);
-         
-      
-        
-//     } catch (error) {
-//         console.log(error);
-//         res.sendStatus(500)
-//         return
-//     }
-    
-
-//     res.sendStatus(200)
-// })
-
-
-
-
-
-
-
 app.get('/' , (req , res) => {
     console.log('ok');
 res.send('hi')
 })
 app.post("/payment/:id", async (req, res) => {
 
-  // await new ProProperty({name : 'a'}).save()
   await new ProProperty({name : 'Premium'})
         .save()
         .catch( error => {
@@ -130,17 +91,6 @@ app.post("/payment/:id", async (req, res) => {
             
         })
 
-//     let headers = req.headers['authorization']
-//     let bearer:any = headers?.split(" ")
-//     let token = bearer[1]
-
-//     let user:any = jwt.verify(token, process.env.JWT_TOKEN_KEY2!)
-// console.log(user);
-
-
-    // const  payment  = (req.body.payment);
-    // console.log(payment);
- 
     const session = await stripe.checkout.sessions.create({
         line_items: [
             {
@@ -158,8 +108,8 @@ app.post("/payment/:id", async (req, res) => {
                 id : req.params.id
             },
         mode: 'payment',
-        success_url: `https://www.google.com`,
-        cancel_url: `https://www.facebook.com`,
+        success_url: `${config.client}/user/payment/paymentSuccess`,
+        cancel_url: `${config.client}/user/payment/paymentFailure`,
       });
 
       res.send({ url: session.url });
@@ -168,7 +118,7 @@ app.post("/payment/:id", async (req, res) => {
 
   
 
-const port = 8120
+const port = 8000
 app.listen(port, () =>{
   connect();
  console.log(`Listening on port ${port}`)});

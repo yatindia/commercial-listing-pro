@@ -30,7 +30,7 @@
           <div class="col-md-4 col-lg-4 col-xl-3 mx-auto mb-4 flogo">
             <!-- Content -->
             <h6 class="text-uppercase fw-bold mb-4">
-             <img width="280px" src="http://localhost:3000/img/logo.png" alt="">
+             <img width="280px" src="/img/logo.png" alt="">
             </h6>
             <p>
               Get connected with us

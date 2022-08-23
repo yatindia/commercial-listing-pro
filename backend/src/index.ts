@@ -371,12 +371,9 @@ app.get("/download/:id", async (req:Request,res:Response)=>{
 
 })
 
-app.post("/api",(req:Request,res:Response)=>{
-  res.send(req)
-})
 
 
-app.listen(5120, () => {
+app.listen(5000, () => {
     connect();
     console.log(`Server Running at http://127.0.0.1:5120`);
   });
