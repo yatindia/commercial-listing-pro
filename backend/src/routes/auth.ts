@@ -146,7 +146,7 @@ auth.get("/verify", async (req: Request, res: Response) => {
       });
 
       auth.set("view engine", "hbs");
-      auth.set("views", "../../views/verifySuccess");
+      auth.set("views", "../views/verifySuccess");
       res.render("index", {Client: config.Client});
 
     } else {
