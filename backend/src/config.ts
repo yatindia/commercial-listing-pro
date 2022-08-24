@@ -1,5 +1,6 @@
 const config = {
-    API: "http://127.0.0.1:5120",
+    API: "http://api.commerciallistingspro.com",
+    Client: "http://commerciallistingspro.com"
 }
 
 export default config

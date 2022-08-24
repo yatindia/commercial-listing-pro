@@ -5,44 +5,13 @@ import mongoose from "mongoose";
 import auth from "./routes/auth"
 import user from "./routes/user"
 import property from "./routes/property";
-import multer from "multer";
-import config from "../config";
-import {v4 as uuid} from "uuid"
-import { response } from "./types/types";
 import {Storage} from "@google-cloud/storage"
 import path from "path"
 import axios from "axios"
-//@ts-ignore
-import pdf from "pdf-creator-node"
 
 import PDFDocument from "pdfkit"
 import PdfTable from "voilab-pdf-table"
 import Property from "./model/Property";
-
-
-let students = [
-  {name: "Joy",
-   email: "joy@example.com",
-   city: "New York",
-   country: "USA"},
-  {name: "John",
-   email: "John@example.com",
-   city: "San Francisco",
-   country: "USA"},
-  {name: "Clark",
-   email: "Clark@example.com",
-   city: "Seattle",
-   country: "USA"},
-  {name: "Watson",
-   email: "Watson@example.com",
-   city: "Boston",
-   country: "USA"},
-  {name: "Tony",
-   email: "Tony@example.com",
-   city: "Los Angels",
-   country: "USA"
-}];
-
 
 const app = express();
 dotenv.config();
@@ -52,8 +21,6 @@ app.use("/image", express.static("uploads"))
 app.use(express.urlencoded({
   extended: true
 }))
-
-
 
 const connect = () => {
   try { mongoose.connect(`mongodb+srv://${process.env.MONGO_USERID}:${process.env.MONGO_PASSWORD}@cluster0.segtq.mongodb.net/test`);
@@ -66,9 +33,6 @@ const connect = () => {
 app.use("/auth",auth)
 app.use("/user",user)
 app.use("/property", property)
-
-
-
 
 const storage = new Storage({
   keyFilename : path.join(__dirname, "../image-upload-358514-053689216333.json"),
@@ -84,7 +48,6 @@ async function uploadFile(bucketName:string,filePath:string, destFileName:string
   console.log(`${filePath} uploaded to ${bucketName}`);
 }
 
-
 async function fetchImage(src:any) {
   const image = await axios
       .get(src, {
@@ -92,9 +55,6 @@ async function fetchImage(src:any) {
       })
   return image.data;
 }
-
-
-
 
 async function buildPDF(data: any, dataCallback: any, endCallback: any) {
  
@@ -362,18 +322,13 @@ app.get("/download/:id", async (req:Request,res:Response)=>{
 
   })
 
- 
-  
-
-
-  
-
-
 })
+
+
 
 
 
 app.listen(5000, () => {
     connect();
-    console.log(`Server Running at http://127.0.0.1:5120`);
+    console.log(`Server Running at http://127.0.0.1:5000`);
   });

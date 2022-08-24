@@ -1,6 +1,6 @@
 const config =  {
     maindir: __dirname,
-    client: "http://198.58.102.188:3000"
+    client: "http://commerciallistingspro.com"
 }
 
 export default config

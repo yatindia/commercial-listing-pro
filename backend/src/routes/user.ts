@@ -7,6 +7,7 @@ import {v4 as uuid} from "uuid"
 import {Storage} from "@google-cloud/storage"
 import fs from "fs"
 import path from "path"
+import Compliant from "../model/Compliant";
 
 //@ts-ignore
 import config from "../../config";
@@ -44,33 +45,6 @@ async function uploadFile(bucketName:string,filePath:string, destFileName:string
 user.use(express.urlencoded({ extended: true }));
 
 
-user.use((req:Request, res:Response, next:NextFunction)=>{
-    let headers = req.headers['authorization']
-    let bearer:any = headers?.split(" ")
-    let token = bearer[1]
-
-    jwt.verify(token, process.env.JWT_TOKEN_KEY2!, function(err:any, decoded:any) {
-        if (err) {
-            
-            res.json({
-                status: false,
-                message: "somthing went wrong, try later",
-            })
-            
-        }else{
-            req.body = {
-                ...req.body,
-                authorization : {
-                    _id : decoded.id
-                }
-                
-            }
-            next()
-            
-        }
-      });
-
-})
 
 
 //Image Upload
@@ -106,6 +80,34 @@ user.post("/imageupload",fielUpload, async (req:Request, res:Response) => {
     res.json(response)
 
  
+})
+
+user.use((req:Request, res:Response, next:NextFunction)=>{
+  let headers = req.headers['authorization']
+  let bearer:any = headers?.split(" ")
+  let token = bearer[1]
+
+  jwt.verify(token, process.env.JWT_TOKEN_KEY2!, function(err:any, decoded:any) {
+      if (err) {
+          
+          res.json({
+              status: false,
+              message: "Authorization Failed",
+          })
+          
+      }else{
+          req.body = {
+              ...req.body,
+              authorization : {
+                  _id : decoded.id
+              }
+              
+          }
+          next()
+          
+      }
+    });
+
 })
 
 
@@ -300,6 +302,37 @@ user.post("/passwordupdate", async (req: any, res: Response)=>{
   res.json(response);
 })
 
+
+user.post("/report", async (req:Request,res:Response)=>{
+  console.log(req.body.authorization._id);
+  
+  let response:response = {
+    status: false,
+    message: "Report filing failed"
+  }
+
+  try {
+    await new Compliant({...req.body.report, compliant_by: req.body.authorization._id})
+    .save()
+    .then(()=>{
+     response.status = true
+     response.message = "Success"
+    })
+    
+  } catch (error) {
+
+    
+
+    response = {
+      status: false,
+      message: "Report filing failed"
+    }
+    
+  }
+
+
+  res.json(response)
+})
 
 
 

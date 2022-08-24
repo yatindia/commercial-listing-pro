@@ -10,8 +10,8 @@
 
 
    let form = {
-       email: "ascdaffffffffsd@dfsl",
-       password: "Mirage20#@"
+       email: "",
+       password: ""
    }
 
    async function reverify(){

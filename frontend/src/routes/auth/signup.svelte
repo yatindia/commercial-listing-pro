@@ -10,12 +10,12 @@
         /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/i;
 
     let form = {
-        firstName: "sdasd",
-        lastName: "asdasd",
-        email: "asdasd@dfsl",
-        password: "Mirage20#@",
-        passwordConfirm: "Mirage20#@",
-        mobileNumber: "13123123",
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        passwordConfirm: "",
+        mobileNumber: "",
         profile: ""
     }
 

@@ -1,92 +1,31 @@
+import "dotenv/config";
 import express, { Application, Request, Response } from "express";
 import {User} from "../model/User";
 import config from "../config";
 import jwt from "jsonwebtoken";
 import mailer from "nodemailer";
+import sgMail from "@sendgrid/mail"
+import ejs from "ejs"
+import path from "path"
+import { response } from "../types/types";
+
+sgMail.setApiKey(process.env.SEND_GRID_API_KEY!);
+
+
 var hbs = require("nodemailer-express-handlebars");
 
-import dotenv from "dotenv";
-dotenv.config();
+
+
 const jwtToken = process.env.JWT_TOKEN_KEY!;
 const jwtToken2 = process.env.JWT_TOKEN_KEY2!;
 const jwtOTPToken = process.env.JWT_OTP_KEY!;
 
-import path from "path";
-import { response } from "../types/types";
+
+
 
 const auth: Application = express();
 
 auth.use(express.urlencoded({ extended: true }));
-
-// let twilioNum = process.env.TWILIO_SENDER_NO!;
-// const accountSid = process.env.TWILIO_ACCOUNT_SID!;
-// const authToken = process.env.TWILIO_AUTH_TOKEN!;
-// const client = require("twilio")(accountSid, authToken);
-
-// auth.post("/sendOTP", async (req, res) => {
-//   const { phoneNumber } = req.body;
-
-//   const otp = Math.floor(100000 + Math.random() * 900000); // generate OTP
-
-
-//   client.messages
-
-//     .create({
-//       body: `Your Otp Is  ${otp}`,
-
-//       from: twilioNum,
-
-//       to: phoneNumber,
-//     })
-
-//     .then((messages: any) => {
-//       let token = jwt.sign(
-//         {
-//           phone:phoneNumber,
-//         },
-//         jwtOTPToken,
-//       );
-//       res.status(200).json({ phoneNumber, otp ,token });
-//     })
-
-//     .catch((err: any) => {
-//       console.error("phone : ", err.message);
-
-//       return res.json({ error: err.message });
-//     });
-// });
-
-// auth.get("/checkOTP", async (req, res) => {
-//   let response: response = {
-//     status: false,
-//     message: "Something Went wrong.",
-//   };
-//   try {
-//     let { token }: any = req.query;
-//     let phoneNumber: any = jwt.verify(token, jwtOTPToken, (error: any, decode: any) => {
-//       if (error) {
-//         return false;
-//       } else {
-//         return decode;
-//       }
-//     });
-//     const user =
-//     (await User.findOne({
-//       phoneNumber
-//     })) || false;
-    
-//   if (user) {
-//     User.findByIdAndUpdate(user._id, { mobileVerified: true }).catch(() => {
-//       throw new Error();
-//     });
-//     response.status= true,
-//     response.message = 'Mobile number Authenticated Successfully';
-//   }}catch (error: any) {
-//     response.status = false;
-//     response.message = error.message;
-//   }
-//   res.json(response);
-// })
 
 
 auth.post("/register", async (req: Request, res: Response) => {
@@ -95,22 +34,16 @@ auth.post("/register", async (req: Request, res: Response) => {
     message: "Something Went wrong, Could Not signup at the moment.",
   };
 
-  const emailCheck =
-    (await User.findOne({
-      email: req.body.email,
-    })) || false;
+  const emailCheck = (await User.findOne({ email: req.body.email, })) || false;
 
 
 
   if (emailCheck !== false) {
-    // return res.json({
-    //   ...response,
-    //   message: `The email Already Exists Please Signin`,
 
-    // });
-    // throw new Error("The email Already Exists Please Signin");
     response.message = `The email Already Exists Please Signin`;
-  } else {
+  } 
+  else {
+
     try {
       let userData = {
         name: req.body.name,
@@ -120,14 +53,10 @@ auth.post("/register", async (req: Request, res: Response) => {
         profile: req.body.profile
       };
 
-      
-
-      const passwordStrengthPattern =
-        /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/i;
-
+      const passwordStrengthPattern = /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/i;
       const emailPattern = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+/i;
 
-      if (!req.body.email.match(emailPattern)) {
+      if (!(req.body.email).match(emailPattern)) {
         throw new Error("this is not a valid email address");
       }
       if (!req.body.password.match(passwordStrengthPattern)) {
@@ -147,59 +76,36 @@ auth.post("/register", async (req: Request, res: Response) => {
           response.message = error.message;
         });
 
-      let token = jwt.sign(
-        {
-          email: req.body.email,
-        },
-        jwtToken,
-        {
-          expiresIn: "1h",
+      let token = jwt.sign( { email: req.body.email, }, jwtToken, { expiresIn: "1h", } );
+
+
+
+      let emailBody = await ejs.renderFile( path.join(__dirname, "../views/email/email.ejs"), {
+        link: `${config.API}/auth/verify?token=${token}`,
+        purpose: "Account Activation"
+      })
+      let msg = {
+        to: req.body.email,
+        from: 'server@commerciallistingspro.com', // Use the email address or domain you verified above
+        subject: 'Account Verification ✔',
+        text: `${config.API}/auth/verify?token=${token}`,
+        html: emailBody
+      };
+
+
+      sgMail
+      .send(msg)
+      .then(() => {}, error => {
+        console.error(error);
+
+        if (error.response) {
+          console.error(error.response.body)
         }
-      );
-      (async (err, str) => {
-        const transporter = mailer.createTransport({
-          host: "smtp.ethereal.email",
-          port: 587,
-          auth: {
-            user: "maci.medhurst97@ethereal.email",
-            pass: "hVZ63n8vnVcf6JhhXb",
-          },
-        });
+      });
 
-        const handlebarOptions = {
-          viewEngine: {
-            extName: ".handlebars",
-            partialsDir: path.resolve("./src/views/email"),
-            defaultLayout: false,
-          },
-          viewPath: path.resolve("./src/views/email"),
-          extName: ".handlebars",
-        };
 
-        transporter.use("compile", hbs(handlebarOptions));
 
-        var mailOptions = {
-          from: "verify@test.com", // sender address
-          to: `${userData.email}`, // list of receivers
-          subject: "Account Verification ✔", // Subject line
-
-          template: "email",
-          context: {
-            link: `${config.API}/auth/verify?token=${token}`,
-          },
-        };
-
-        // transporter.sendMail(mailOptions, function (error, info) {
-        //   if (error) {
-        //     console.log(error);
-        //   } else {
-        //     console.log("Email sent: " + info.response);
-        //   }
-        // });
-      })();
-      // return res.json({
-      //   response
-      // });
+ 
     } catch (error: any) {
       response.status = false;
       response.message = error.message;
@@ -208,9 +114,7 @@ auth.post("/register", async (req: Request, res: Response) => {
   }
   response.errorMessage = "he is it"
 
-  return res.json({
-    response,
-  });
+  return res.json({response});
 });
 
 auth.get("/verify", async (req: Request, res: Response) => {
@@ -241,54 +145,10 @@ auth.get("/verify", async (req: Request, res: Response) => {
         throw new Error();
       });
 
-      // auth.set('view engine', 'ejs');
-      // res.render('index');
-
       auth.set("view engine", "hbs");
       auth.set("views", "./src/views/verifySuccess");
-      res.render("index");
+      res.render("index", {Client: config.Client});
 
-      // auth.engine('handlebars', engine());
-      // auth.set('views', './src/views');
-
-      // auth.set('view engine', 'hbs');
-
-      // res.render('index');
-
-      // console.log(__dirname);
-      // res.setHeader('Content-Type', 'text/html');
-      // res.sendFile(path.join(__dirname, '/index.html'));
-
-      // res.send(`<html lang="en">
-
-      // <body>
-      // <div>
-      //         <h2>E-mail Successfully Verified</h2>
-      //         <a href="http//:127.0.0.1.3000/login">back to login</a>
-      //     </div>
-      // </body>
-      // </html>`);
-      // res.end()
-      // response.status = true;
-      // response.message = "successfully Verified";
-
-      // auth.engine('handlebars', hbss({defaultLayout: 'main',
-      // LayoutsDir:path.join(__dirname,'views/verifScss')}));
-      // auth.set('view engine', 'handlebars');
-
-      // res.render('succes');
-      // auth.use(express.static(path.join(__dirname, 'verifScss')))
-      // auth.engine('handlebars', hbss({extname: 'handlebars', defaultLayout: 'layout', layoutsDir: __dirname + '/views/'}));
-      // auth.set('views', path.join(__dirname, 'views/verifScss'));
-      // auth.set('view engine', 'handlebars');
-      // res.render('succes');
-      // res.sendFile(path.join(__dirname + 'src/verifScss/succes'))
-      // res.setHeader('Content-Type', 'text/html');
-      // res.sendFile(__dirname + '/succes.html');
-
-      // res.writeHead(200, {'Content-Type': 'text/html'})
-      //   res.write(require('./succes.html'))
-      //   res.end()
     } else {
       throw new Error("the token is invalid");
     }
@@ -367,47 +227,34 @@ auth.post("/resetpassword", async (req: Request, res: Response) => {
         jwtToken2
       );
 
-      (async (err, str) => {
-        const transporter = mailer.createTransport({
-          host: "smtp.ethereal.email",
-          port: 587,
-          auth: {
-            user: "maci.medhurst97@ethereal.email",
-            pass: "hVZ63n8vnVcf6JhhXb",
-          },
-        });
+      let emailBody = await ejs.renderFile( path.join(__dirname, "../views/password/password.ejs"), {
+        link: `${config.API}/auth/passwordquery?token=${token}`,
+        purpose: "Password Reset"
+      })
+      let msg = {
+        to: req.body.email,
+        from: 'server@commerciallistingspro.com', // Use the email address or domain you verified above
+        subject: 'Account Password Reset ✔',
+        text: `${config.API}/auth/passwordquery?token=${token}}`,
+        html: emailBody
+      };
 
-        const handlebarOptions = {
-          viewEngine: {
-            extName: ".handlebars",
-            partialsDir: path.resolve("./src/views/password"),
-            defaultLayout: false,
-          },
-          viewPath: path.resolve("./src/views/password"),
-          extName: ".handlebars",
-        };
 
-        transporter.use("compile", hbs(handlebarOptions));
+      sgMail
+      .send(msg)
+      .then(() => {}, error => {
+        console.error(error);
 
-        var mailOptions = {
-          from: "verify@test.com", // sender address
-          to: `${res.email}`, // list of receivers
-          subject: "Password Recovery ✔", // Subject line
+        if (error.response) {
+          console.error(error.response.body)
+        }
+      });
 
-          template: "password",
-          context: {
-            link: `${config.API}/auth/passwordquery?token=${token}`,
-          },
-        };
 
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log("Email sent: " + info.response);
-          }
-        });
-      })();
+
+
+
+
 
       response.status = true;
       response.message = "please check your e-mail To Reset Password";
@@ -448,7 +295,7 @@ auth.get("/passwordquery", async (req: Request, res: Response) => {
       let newuser = { email: user.email };
       auth.set("view engine", "hbs");
       auth.set("views", "./src/views/passwordUpdate");
-      res.render("index", { newuser });
+      res.render("index", { newuser, API: config.API, Client: config.Client  });
     } else {
       throw new Error("the token is invalid");
     }
@@ -499,54 +346,33 @@ auth.post("/reverification", async (req: any, res: Response) => {
       if (!user) {
         throw new Error("user does not exist create new account.");
       }
-      if (user && !user.accountVerified) {
-        let token = jwt.sign(
-          {
-            email: req.body.email,
-          },
-          process.env.JWT_TOKEN_KEY!
-        );
-        (async (err, str) => {
-          const transporter = mailer.createTransport({
-            host: "smtp.ethereal.email",
-            port: 587,
-            auth: {
-              user: "maci.medhurst97@ethereal.email",
-              pass: "hVZ63n8vnVcf6JhhXb",
-            },
-          });
+      if (user && !user.accountVerified) { let token = jwt.sign( { email: req.body.email, }, process.env.JWT_TOKEN_KEY! );
 
-          const handlebarOptions = {
-            viewEngine: {
-              extName: ".handlebars",
-              partialsDir: path.resolve("./src/views/email"),
-              defaultLayout: false,
-            },
-            viewPath: path.resolve("./src/views/email"),
-            extName: ".handlebars",
-          };
+        let emailBody = await ejs.renderFile( path.join(__dirname, "../views/email/email.ejs"), {
+          link: `${config.API}/auth/verify?token=${token}`,
+          purpose: "Account Activation"
+        })
+        let msg = {
+          to: req.body.email,
+          from: 'server@commerciallistingspro.com', // Use the email address or domain you verified above
+          subject: 'Account Re Verification ✔',
+          text: `${config.API}/auth/verify?token=${token}`,
+          html: emailBody
+        };
+  
+  
+        sgMail
+        .send(msg)
+        .then(() => {}, error => {
+          console.error(error);
+  
+          if (error.response) {
+            console.error(error.response.body)
+          }
+        });
+  
 
-          transporter.use("compile", hbs(handlebarOptions));
 
-          var mailOptions = {
-            from: "verify@test.com", // sender address
-            to: `${user.email}`, // list of receivers
-            subject: "Account Verification ✔", // Subject line
-
-            template: "email",
-            context: {
-              link: `${config.API}/auth/verify?token=${token}`,
-            },
-          };
-
-          transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log("Email sent: " + info.response);
-            }
-          });
-        })();
         response.status = true;
         response.message =
           "verifcation link sent to your email,It will expire in 1 hour";

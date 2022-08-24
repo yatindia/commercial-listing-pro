@@ -73,9 +73,6 @@
             <p>
               <a href="/user/post" class="text-reset">Add Property</a>
             </p>
-            <!-- <p>
-              <a href="/" class="text-reset">Laravel</a>
-            </p> -->
           </div>
           <!-- Grid column -->
   
@@ -85,17 +82,15 @@
             <h6 class="text-uppercase fw-bold mb-4">
               Useful links
             </h6>
+
             <p>
-              <a href="/" class="text-reset">Contact Us</a>
-            </p>
-            <!-- <p>
-              <a href="/" class="text-reset"></a>
-            </p> -->
-            <p>
-              <a href="/" class="text-reset">Terms of Use</a>
+              <a href="/termsofuse" class="text-reset">Terms of Use</a>
             </p>
             <p>
-              <a href="/" class="text-reset">Privacy Policy</a>
+              <a href="/privacypolicy" class="text-reset">Privacy Policy</a>
+            </p>
+            <p>
+              <a href="/report" class="text-reset">Report !</a>
             </p>
           </div>
           <!-- Grid column -->
@@ -108,8 +103,7 @@
             </h6>
             <p><i class="fas fa-home me-3"></i> New Jersey, NJ 10012, US</p>
             <p>
-              <i class="fas fa-envelope me-3"></i>
-              itproz@yahoo.com
+              <i class="fas fa-envelope me-3"></i>support@commerciallistingspro.com
             </p>
             <p><i class="fas fa-phone me-3"></i> + 01 234 567 88</p>
             <p><i class="fas fa-print me-3"></i> + 01 234 567 89</p>

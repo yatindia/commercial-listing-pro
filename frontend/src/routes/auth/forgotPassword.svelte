@@ -1,21 +1,68 @@
 <script context="module">
-    export function load({url}){
-
-
+    export function load({url}) {
         return {
             props: {
-                email : url
+                email: url
             }
         }
 
-    }
+    } 
 </script>
 
 <script>
+import {API} from "../../config"
+export let email
+$: email = email.searchParams.get("email") || '';
 
-    export let email
-    $:email = email.searchParams.get("email") || '';
+
+async function submit() {
+
+
+
+    if (email == "") {
+        Swal.fire({
+            icon: "error",
+            titleText: "Email Cannot Be Empty"
+        })
+        return false
+
+    } else {
+
+
+
+        await fetch(`${API}/auth/resetpassword`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({email})
+            })
+            .then(res => res.json())
+            .then(res => {
+
+
+                if (res.status) {
+                    
+                    Swal.fire({
+                        icon: "success",
+                        titleText: "Please Check Your Email",
+                    })
+                }
+                else {
+                    Swal.fire({
+                        icon: "question",
+                        titleText: "Somthing Happened",
+                    })
+                }
+            })
+
+    }
+
+} 
+
 </script>
+
+
 
 <svelte:head>
   <link rel="icon" href="/img/favicon.png" />
@@ -24,7 +71,7 @@
 
 <section class="signup">
 
-    <form>
+    <form on:submit|preventDefault={()=>submit()}>
 
         <div class="cover">
             <h1 class="text-center">Recover Password</h1>

@@ -11,7 +11,7 @@
      let properties;
 
     onMount(async ()=>{
-
+      
         login = JSON.parse(localStorage.getItem("login"))
 
         let search={
