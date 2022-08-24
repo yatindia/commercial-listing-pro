@@ -80,7 +80,7 @@ auth.post("/register", async (req: Request, res: Response) => {
 
 
 
-      let emailBody = await ejs.renderFile( path.join(__dirname, "../views/email/email.ejs"), {
+      let emailBody = await ejs.renderFile( path.join(__dirname, "../../views/email/email.ejs"), {
         link: `${config.API}/auth/verify?token=${token}`,
         purpose: "Account Activation"
       })
@@ -146,7 +146,7 @@ auth.get("/verify", async (req: Request, res: Response) => {
       });
 
       auth.set("view engine", "hbs");
-      auth.set("views", "./src/views/verifySuccess");
+      auth.set("views", "../../views/verifySuccess");
       res.render("index", {Client: config.Client});
 
     } else {
@@ -227,7 +227,7 @@ auth.post("/resetpassword", async (req: Request, res: Response) => {
         jwtToken2
       );
 
-      let emailBody = await ejs.renderFile( path.join(__dirname, "../views/password/password.ejs"), {
+      let emailBody = await ejs.renderFile( path.join(__dirname, "../../views/password/password.ejs"), {
         link: `${config.API}/auth/passwordquery?token=${token}`,
         purpose: "Password Reset"
       })
@@ -294,7 +294,7 @@ auth.get("/passwordquery", async (req: Request, res: Response) => {
       });
       let newuser = { email: user.email };
       auth.set("view engine", "hbs");
-      auth.set("views", "./src/views/passwordUpdate");
+      auth.set("views", "../../views/passwordUpdate");
       res.render("index", { newuser, API: config.API, Client: config.Client  });
     } else {
       throw new Error("the token is invalid");
@@ -348,7 +348,7 @@ auth.post("/reverification", async (req: any, res: Response) => {
       }
       if (user && !user.accountVerified) { let token = jwt.sign( { email: req.body.email, }, process.env.JWT_TOKEN_KEY! );
 
-        let emailBody = await ejs.renderFile( path.join(__dirname, "../views/email/email.ejs"), {
+        let emailBody = await ejs.renderFile( path.join(__dirname, "../../views/email/email.ejs"), {
           link: `${config.API}/auth/verify?token=${token}`,
           purpose: "Account Activation"
         })
