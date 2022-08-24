@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors"
-import {ProProperty} from "./model/ProProperty"
 import  jwt  from "jsonwebtoken";
 import Stripe from 'stripe';
 import Property from "./model/Property";
@@ -83,13 +82,6 @@ res.send('hi')
 })
 app.post("/payment/:id", async (req, res) => {
 
-  await new ProProperty({name : 'Premium'})
-        .save()
-        .catch( error => {
-            
-            console.log(error)
-            
-        })
 
     const session = await stripe.checkout.sessions.create({
         line_items: [
